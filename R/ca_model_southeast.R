@@ -1,16 +1,16 @@
 # ca_nh4_ph_7
 # 
-Ca_nH4_ph_7_method, K_nh4_ph_7_method and mg_nh4_ph_7_method 
-
-4B1a – moisture content as a percentage of <2-mm. report procedure code 4B1a and the equilibrium tension 
-
-6N2, 6O2, and 6Q2 – report the extractable Ca, K and Mg in units of meq 100g-1 of oven dry soil to the nearest 0.1 meq 100g-1 
-
-#### for k in Meq per 100 g the converision is 1 Meq per 100 g = 390 ppm
-# 1 ppm = 0.0001 % 
-
-# the unique methods for K are
-4B1a1 4B1a1a    6N2   6N2a   6N2b   6N2d   6N2e   6N2f   6N2i     NK 
+# Ca_nH4_ph_7_method, K_nh4_ph_7_method and mg_nh4_ph_7_method 
+# 
+# 4B1a – moisture content as a percentage of <2-mm. report procedure code 4B1a and the equilibrium tension 
+# 
+# 6N2, 6O2, and 6Q2 – report the extractable Ca, K and Mg in units of meq 100g-1 of oven dry soil to the nearest 0.1 meq 100g-1 
+# 
+# #### for k in Meq per 100 g the converision is 1 Meq per 100 g = 390 ppm
+# # 1 ppm = 0.0001 % 
+# 
+# # the unique methods for K are
+# 4B1a1 4B1a1a    6N2   6N2a   6N2b   6N2d   6N2e   6N2f   6N2i     NK 
 # dependencies
 library(tidyverse)
 library(forestmangr)

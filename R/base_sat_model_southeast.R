@@ -28,7 +28,7 @@ df <- df[-4662, ]
 df[df == "NULL"] <- NA
 #df[ , 6:16] <- lapply(df[, c(6:16)],as.numeric)
 ####
-# 
+# head@@he
 Bulk Density Oven dry methods 
 
 4A1h and Db – reported to the nearest 0.01g cc-1 of <2-mm soil fabric 
@@ -79,9 +79,8 @@ og <- df            ######## we lose ~99 observations likely because there is a 
 df %>%
     dplyr::select(contains("soil_name") | contains("horizon") | contains("base")) %>%
     dplyr::group_by(soil_name, horizon) %>%
-    dplyr::summarise(ph.cacl = mean(ph_cacl2, na.rm = TRUE),
-                     ph.h2o = mean(ph_h2o, na.rm = TRUE)) %>%
-    data.frame() -> df.ph
+    dplyr::summarise(base_sat = mean(base_sat_nh4oac_ph_7, na.rm = TRUE)) %>%
+    data.frame() -> df.base
 
 ##### numerical interpolation of 
 # first we make all of the correct values

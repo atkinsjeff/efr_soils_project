@@ -13,7 +13,7 @@ p <- read.csv("./data/southeast_soils_p_output.csv")
 total.n <- read.csv("./data/southeast_soils_n_output.csv")
 org.c <- read.csv("./data/southeast_soils_organic_c_output.csv")
 total.c <- read.csv("./data/southeast_soils_total_c_output.csv")
-
+total.c2 <- read.csv("./data/southeast_soils_total_c_new_output.csv")
 # total sites info
 
 # import data
