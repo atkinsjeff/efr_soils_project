@@ -44,7 +44,7 @@ ssc <- na.omit(phys[, c('sand', 'silt', 'clay')])
 names(ssc) <- c('SAND', 'SILT', 'CLAY')
 
 x11()
-textureTriangleSummary(ssc, cex = 0.5)
+textureTriangleSummary(ssc, cex = 0.5, main = "Soil Texture by Horizon  for Soil Series Represented in Southeastern US EFRs (n = 149 Soils; n = 596 Total Horizons")
 
 
 
