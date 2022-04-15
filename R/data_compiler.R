@@ -14,6 +14,9 @@ total.n <- read.csv("./data/southeast_soils_n_output.csv")
 org.c <- read.csv("./data/southeast_soils_organic_c_output.csv")
 total.c <- read.csv("./data/southeast_soils_total_c_output.csv")
 total.c2 <- read.csv("./data/southeast_soils_total_c_new_output.csv")
+base.sat <- read.csv("./data/southeast_soils_base_sat_output.csv")
+ph <- read.csv("./data/southeast_soils_ph_output.csv")
+
 # total sites info
 
 # import data
@@ -30,6 +33,8 @@ jim <- merge(jim, p[ , c(1:2, 12)], by = c("soil_name", "horizon"), all.x = TRUE
 jim <- merge(jim, total.n[ , c(1:2, 12)], by = c("soil_name", "horizon"), all.x = TRUE)
 jim <- merge(jim, org.c[ , c(2:3, 6)], by = c("soil_name", "horizon"), all.x = TRUE)
 jim <- merge(jim, total.c[ , c(2:3, 9)], by = c("soil_name", "horizon"), all.x = TRUE)
+jim <- merge(jim, base.sat, by = c("soil_name", "horizon"), all.x = TRUE)
+jim <- merge(jim, ph, by = c("soil_name", "horizon"), all.x = TRUE)
 
 # add the bulk and physical properities
 
@@ -67,7 +72,7 @@ jim$total.org.c <- jim$total.org.c * 10
 jim$total_c_soil <- jim$total_c_soil * 10
 
 
-write.csv(jim, "southeast_soils_data_compiled_20220406.csv", row.names = FALSE)
+write.csv(jim, "southeast_soils_data_compiled_20220415.csv", row.names = FALSE)
 
 jim %>%
     group_by(soil_name) %>%

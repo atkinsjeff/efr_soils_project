@@ -66,3 +66,16 @@ ggplot(a, aes(fill = horizon, y = carbon, x = soil_name)) +
     xlab("")+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
     facet_wrap(. ~ model, ncol = 1)
+
+a$carbon <- a$carbon * 10
+x11()
+ggplot(a, aes(fill = horizon, y = carbon, x = soil_name)) + 
+    geom_bar(position="stack", stat="identity", color = "black")+
+    scale_fill_viridis(discrete = T, option = "G") +
+    ggtitle("SE EFT Carbon Model Test") +
+    theme_classic() +
+    ylab("Total C per soil horizon [Mg ha^-1]")+
+    xlab("")+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    facet_wrap(. ~ model, ncol = 1)
+

@@ -1,10 +1,10 @@
-install.packages('soilDB')
-install.packages('aqp')
-install.packages('mapview')
-install.packages('sf')
-install.packages('soiltexture')
-install.packages('scales')
-install.packages('Hmisc')
+# install.packages('soilDB')
+# install.packages('aqp')
+# install.packages('mapview')
+# install.packages('sf')
+# install.packages('soiltexture')
+# install.packages('scales')
+# install.packages('Hmisc')
 
 
 # check to see if packages are already installed, otherwise install and load

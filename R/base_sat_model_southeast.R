@@ -29,9 +29,9 @@ df[df == "NULL"] <- NA
 #df[ , 6:16] <- lapply(df[, c(6:16)],as.numeric)
 ####
 # head@@he
-Bulk Density Oven dry methods 
+# Bulk Density Oven dry methods 
 
-4A1h and Db – reported to the nearest 0.01g cc-1 of <2-mm soil fabric 
+#4A1h and Db – reported to the nearest 0.01g cc-1 of <2-mm soil fabric 
 
 # PARTICLE SIZE is percentage (%) 
 # Phosphorus reported as % to the nearest hundredth 
@@ -87,16 +87,15 @@ df %>%
 df.grid <- expand.grid(soil_name = unique(df$soil_name), horizon = c("0_10", "10_20", "20_40", "40_100"))
 
 # merge together
-bob <- merge(df.grid, df.ph,  by = c("soil_name", "horizon"), all.x = TRUE)
+bob <- merge(df.grid, df.base,  by = c("soil_name", "horizon"), all.x = TRUE)
 
 # linear interpolation between values
 bob %>%
-    select(soil_name, horizon, ph) %>%
+    select(soil_name, horizon, base_sat) %>%
     #filter(!horizon == "0_10" && is.na(ca_per) == TRUE) %>%
     group_by(soil_name) %>%
     mutate(horizon = horizon,
-           ph.cacl = na.approx(ph.cacl, na.rm = FALSE, rule = 2),
-           ph.h2o = na.approx(ph.h2o, na.rm = FALSE, rule = 2)) %>%
+           base_sat = na.approx(base_sat, na.rm = FALSE, rule = 2)) %>%
     data.frame() -> andy
 
 head(andy)
@@ -107,5 +106,5 @@ head(andy)
 # 
 # andy %>%
 # write to file
-write.csv(andy, "./data/southeast_soils_ph_output.csv", row.names = FALSE)
+write.csv(andy, "./data/southeast_soils_base_sat_output.csv", row.names = FALSE)
 

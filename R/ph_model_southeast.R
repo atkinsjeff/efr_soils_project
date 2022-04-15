@@ -78,7 +78,6 @@ bob <- merge(df.grid, df.ph,  by = c("soil_name", "horizon"), all.x = TRUE)
 
 # linear interpolation between values
 bob %>%
-    select(soil_name, horizon, ph) %>%
     #filter(!horizon == "0_10" && is.na(ca_per) == TRUE) %>%
     group_by(soil_name) %>%
     mutate(horizon = horizon,
