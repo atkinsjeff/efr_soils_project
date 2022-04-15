@@ -73,7 +73,3 @@ jim$total_c_soil <- jim$total_c_soil * 10
 
 
 write.csv(jim, "southeast_soils_data_compiled_20220415.csv", row.names = FALSE)
-
-jim %>%
-    group_by(soil_name) %>%
-    summarize()
