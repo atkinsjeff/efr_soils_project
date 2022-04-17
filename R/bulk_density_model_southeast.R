@@ -195,8 +195,8 @@ zzz %>%
 
 
 # # write to file
-write.csv(zzz, "soil_series_bulk_density_horizon_method_southeast.csv", row.names = FALSE)
-write.csv(zzz.wide, "soil_series_bulk_density_horizon_method_southeast_wide_format.csv", row.names = FALSE)
+# write.csv(zzz, "soil_series_bulk_density_horizon_method_southeast.csv", row.names = FALSE)
+# write.csv(zzz.wide, "soil_series_bulk_density_horizon_method_southeast_wide_format.csv", row.names = FALSE)
 
 
 
@@ -300,7 +300,7 @@ df.phys.final$clay[is.na(df.phys.final$clay)] <- phys.horizon$clay[match(df.phys
 df.phys.final$frag[is.na(df.phys.final$frag)] <- phys.horizon$frag[match(df.phys.final$horizon, phys.horizon$horizon)][which(is.na(df.phys.final$frag))]
 
 # # write to file
-write.csv(df.phys.final, "soil_series_physical_southeast.csv", row.names = FALSE)
+#write.csv(df.phys.final, "soil_series_physical_southeast.csv", row.names = FALSE)
 
 
 
