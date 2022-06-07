@@ -101,7 +101,7 @@ bob %>%
     #filter(!horizon == "0_10" && is.na(ca_per) == TRUE) %>%
     group_by(soil_name) %>%
     mutate(horizon = horizon,
-           n_per = na.approx(n_per, na.rm = FALSE, rule = 2)) %>%
+           n_per = zoo::na.approx(n_per, na.rm = FALSE, rule = 2)) %>%
     data.frame() -> andy
 
 # 
@@ -129,14 +129,43 @@ df <- merge(df, df.bulk)
 df <- merge(df, phys)
 
 
-# makes grams of P per square meter to one meter depth
-# P is in mg per kg, so convert it! by multiplying by 0.0001
-df$n_g_m2 <- (df$n_per * 0.0001) * df$bulk_density * ((100 - df$frag)/100)
+# N is percent
+df$n_g_cm3 <- (df$n_per * 0.01) * df$bulk_density * ((100 - df$frag)/100)
+
+# make N for horizons
+for (i in 1:nrow(df)){
+    if (df$horizon[i] == "0_10") {
+        (df$n_kg_horizon[i] = df$n_g_cm3[i] * 1000) * 0.1 
+    } else if (df$horizon[i] == "10_20") {
+        (df$n_kg_horizon[i] = df$n_g_cm3[i] * 1000) * 0.1
+    } else if (df$horizon[i] == "20_40") {
+        (df$n_kg_horizon[i] = df$n_g_cm3[i] * 1000) * 0.2
+    } else if (df$horizon[i] == "40_100") {
+        (df$n_kg_horizon[i] = df$n_g_cm3[i] * 1000) * 0.6
+    } else {
+        df$n_kg_horizon[i] <- NA
+    }
+}
 
 # plot for test
 x11()
-hist(df$n_g_m2)
+hist(df$n_kg_horizon)
 
+#
+df %>%
+    group_by(soil_name) %>%
+    summarize(n_kg_m2 = sum(n_kg_horizon, na.rm = TRUE)) %>%
+    data.frame() -> soil.n
+
+soil.n$n_kg_ha <- soil.n$n_kg_m2 * 10000
+
+x11()
+hist(soil.n$n_kg_ha)
+
+soil.n$n_Mg_ha <- soil.n$n_kg_ha * 0.001
+
+x11()
+hist(soil.n$n_Mg_ha)
 ##### calculate p BRAY 
 # #### MODEL ONE Form
 # model.table <- nls_table(df.ca, ca_nh4_ph_7 ~ b0 * exp( -b1 * horizon_midpoint), 

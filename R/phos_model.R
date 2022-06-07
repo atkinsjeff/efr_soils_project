@@ -134,7 +134,7 @@ df.bulk <- read.csv("./data/soil_series_bulk_density_horizon_method_southeast.cs
 #### merge to only those with bulk density
 df <- merge(andy, df.bulk)
 
-# bring in soil physical properities
+# bring in soil physical properties
 # bring in physical    
 phys <- read.csv("./data/soil_series_physical_southeast.csv")
 df <- merge(df, phys)
