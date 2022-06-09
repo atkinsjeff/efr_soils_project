@@ -1,3 +1,9 @@
+# Below this converts values of chemical properties to ppm (part per million)
+# Report the saturation extraction cations of Ca2+, Mg2+, Na+ ,  and K+
+# in units of meq L-1 to the
+# nearest 0.1 meq L-1
+# Calcium conversion is 1 meq L-1 = 200 ppm
+# 
 # ca_nh4_ph_7
 # 
 # Ca_nH4_ph_7_method, K_nh4_ph_7_method and mg_nh4_ph_7_method 
@@ -68,6 +74,17 @@ df$soil_name <- tolower(df$soil_name)
 # og
 og <- df            ######## we lose ~99 observations likely because there is a soil series we don't have the bulk density for????
 
+
+# panel plot for calcium
+x11(width = 6, height = 3)
+ggplot(og, aes(x = ca_nh4_ph_7_method, y = log10(ca_nh4_ph_7)))+
+    geom_boxplot()+
+    theme_bw()+
+    ylab(expression(paste("Calcium (Ca) log "[10]*"("~mu*eq*L^-1*")")))+
+    xlab("Extraction Method")
+
+
+
 # Filter down and average
 
 # make the methods more easy 
@@ -76,12 +93,12 @@ df$ca_nh4_ph_7_method <- substr(df$ca_nh4_ph_7_method, 0, 2)
 df %>%
     dplyr::select(contains("soil_name") | contains("horizon") | contains("ca_")) %>%
     #dplyr::group_by(soil_name, horizon) %>%
-    dplyr::mutate(ca_per = case_when(ca_nh4_ph_7_method == "6N" ~ ca_nh4_ph_7 * 0.02,
-                                    ca_nh4_ph_7_method == "4B" ~ ca_nh4_ph_7,
-                                    ca_nh4_ph_7_method == "NK" ~ 0,
-                                    ca_nh4_ph_7_method == "" ~ 0)) %>%
+    # dplyr::mutate(ca_per = case_when(ca_nh4_ph_7_method == "6N" ~ ca_nh4_ph_7 * 0.02,
+    #                                 ca_nh4_ph_7_method == "4B" ~ ca_nh4_ph_7,
+    #                                 ca_nh4_ph_7_method == "NK" ~ 0,
+    #                                 ca_nh4_ph_7_method == "" ~ 0)) %>%
     dplyr::group_by(soil_name, horizon) %>%
-    dplyr::summarise(ca_per = mean(ca_per, na.rm = TRUE)) %>%
+    dplyr::summarise(ca_mqevL = mean(ca_nh4_ph_7, na.rm = TRUE)) %>%
     data.frame() -> df.ca
 
 ##### numerical interpolation of 
@@ -93,21 +110,15 @@ bob <- merge(df.grid, df.ca,  by = c("soil_name", "horizon"), all.x = TRUE)
 
 # linear interpolation between values
 bob %>%
-    select(soil_name, horizon, ca_per) %>%
+    select(soil_name, horizon, ca_mqevL) %>%
     #filter(!horizon == "0_10" && is.na(ca_per) == TRUE) %>%
     group_by(soil_name) %>%
     mutate(horizon = horizon,
-           ca_per = na.approx(ca_per, na.rm = FALSE, rule = 2)) %>%
+           ca_mqevL  = zoo::na.approx(ca_mqevL , na.rm = FALSE, rule = 2)) %>%
     data.frame() -> andy
 
-# 
-# andy %>%
-#     filter(soil_name == "evergreen")
-# 
-# bob %>%
-#     filter(soil_name == "evergreen")
-# 
-# 
+# convert Ca mqevl to ppm
+andy$ca_ppm <- andy$ca_mqevL * 200
 
 
 # bring in bulk density
@@ -121,108 +132,62 @@ phys <- read.csv("./data/soil_series_physical_southeast.csv")
 df <- merge(df, phys)
 
 # makes grams of P per square meter to one meter depth
-df$ca_g_m2 <- (df$ca_per) * df$bulk_density * ((100 - df$frag)/100)
+# units are in ppm. to convert ppm to percent multiply by 0.0001, then to convert % to ratio multiply by 0.01
+df$ca_g_cm3 <- (df$ca_ppm * 0.0001 * 0.01) * df$bulk_density * ((100 - df$frag)/100)
 
 # plot for test
 x11()
-hist(df$ca_g_m2)
-
-##### calculate p BRAY 
-# #### MODEL ONE Form
-# model.table <- nls_table(df.ca, ca_nh4_ph_7 ~ b0 * exp( -b1 * horizon_midpoint), 
-#                            mod_start = c( b0 = 1, b1 = 1),
-#                            .groups = "soil_name",
-#                            keep_model = TRUE)
-# 
-# # make empty
-# model.table$aic <- NA
-# 
-# 
-# # create test stat AIC
-# for(i in 1:nrow(model.table)){
-#     if (is.data.frame(model.table$Reg[[i]]) == FALSE ){
-#         
-#         model.table$aic[i] = AIC(model.table$Reg[[i]]) 
-#     } else {
-#         model.table$aic[i] = NA
-#     }
-# }    
-# 
-# 
-# 
-# # merge filter to only the model ready data
-# df.ca%>%
-#     filter(soil_name %in% model.table$soil_name) -> df.ca.model
-# 
-# # merge with model coeff
-# df.ca.model <- merge(df.ca.model, model.table[, c("soil_name", "b0", "b1")])
-# 
-# # modeled carbon
-# df.ca.model$ca_stock <- round(df.ca.model$b0 * exp( -df.ca.model$b1 * df.ca.model$horizon_midpoint), 5)
-# 
-# x11()
-# ggplot(df.ca.model, aes(x = ca_nh4_ph_7 , y = ca_stock))+
-#     geom_point(size = 2, shape = 21)+
-#     xlab("Measured Ca [g m-2]")+
-#     ylab("Modelled Ca [g m-2]")+
-#     xlim(c(0, 50))+
-#     ylim(c(0, 50))+
-#     geom_smooth(method = "lm")
-# 
-# # model test
-# summary(lm(ca_nh4_ph_7 ~ ca_stock, data = df.ca.model))
+hist(df$ca_g_cm3)
 
 
-# 
+
+# make Ca for horizons
+for (i in 1:nrow(df)){
+    
+    if (df$horizon[i] == "0_10") {
+        
+        (df$ca_Mg_horizon[i] = df$ca_g_cm3[i] * 0.1)
+        
+    } else if (df$horizon[i] == "10_20") {
+        
+        (df$ca_Mg_horizon[i] = df$ca_g_cm3[i] * 0.1)
+        
+    } else if (df$horizon[i] == "20_40") {
+        
+        (df$ca_Mg_horizon[i] = df$ca_g_cm3[i] * 0.2)
+        
+    } else if (df$horizon[i] == "40_100") {
+        
+        (df$ca_Mg_horizon[i] = df$ca_g_cm3[i] * 0.6)
+        
+    } else {
+        
+        df$ca_Mg_horizon[i] <- NA
+        
+    }
+    
+}
+
+
+# convert to Mg per hectare for EACH horizon
+df$ca_Mg_ha <- df$ca_Mg_horizon * 10000
+
+# writing the horizons to disk
+write.csv(df, "./data/FinalData/calcium_by_horizon.csv")
+
+# 1 gram per cubic meter equals 1 megagram per cubic meter#
 df %>%
-    mutate(total_ca_horizon = case_when(horizon == "0_10" ~ ca_g_m2 * 10, 
-                                horizon == "10_20" ~ ca_g_m2 * 10,
-                                horizon == "20_40" ~ ca_g_m2 * 20,
-                                horizon == "40_100" ~ ca_g_m2 * 60)) %>%
-    data.frame() -> df.final
+    group_by(soil_name) %>%
+    summarize(ca_Mg_ha = sum(ca_Mg_ha, na.rm = TRUE)) %>%
+    data.frame() -> soil.ca
 
 
-# #### make the leon problem
-# make tractable
-length(which(df.final$total_ca_horizon == 0))
-df.final$total_ca_horizon[df.final$total_ca_horizon == 0] <- NA
+# histogram of finals
+x11(width = 6, height = 3)
+hist(soil.ca$ca_Mg_ha, breaks = 100,
+     ylab = ("No. of Samples"),
+     xlab = (expression(paste("Extractable Ca (Mg ha"^-1, ")"))),
+     main = NULL)##### calculate p BRAY
 
-df.final$total_ca_horizon <- round(df.final$total_ca_horizon, 5)
-# df.final$total_ca_horizon_kg <- df.final$total_ca_horizon * 0.001  # makes it in kg
-
-# # now remove the frag part
-# df.final %>%
-#     filter(total_ca_horizon_kg < 2) %>%
-#     select(soil_name, horizon, total_ca_horizon_kg) %>%
-#     group_by(soil_name, horizon) %>%
-#     summarise(total_ca = mean(total_ca_horizon_kg, na.rm = TRUE)) %>%
-#     data.frame() -> andy
-# 
-# # bring in physical    
-# phys <- read.csv("./data/soil_series_physical_southeast.csv")
-# 
-# # 
-# carl <- merge(andy, phys)
-# 
-# carl$total_ca_soil <- carl$total_ca * ((100 - carl$frag)/100)
-require(ggplot2)
-
-# remove this wild boy
-# carl %>%
-#     filter(soil_name != "leon") %>%
-#     data.frame() -> dave
-
-
-
-x11()
-ggplot(df.final, aes(fill = horizon, y = total_ca_horizon, x = soil_name)) + 
-    geom_bar(position="stack", stat="identity", color = "black")+
-    scale_fill_viridis(discrete = T, option = "G") +
-    ggtitle("SE EFT ca Model Test") +
-    theme_classic() +
-    ylab("Total Ca per soil horizon [g m-2]")+
-    xlab("")
-
-# write to file
-write.csv(df.final, "./data/southeast_soils_ca_output.csv", row.names = FALSE)
-
+# writing final data to disk
+write.csv(soil.n, "./data/FinalData/calcium_to_1m_by_soil_series.csv")

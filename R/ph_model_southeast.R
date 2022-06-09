@@ -61,6 +61,21 @@ df$soil_name <- tolower(df$soil_name)
 og <- df            ######## we lose ~99 observations likely because there is a soil series we don't have the bulk density for????
 
 # ph CACL
+# panel plot for calcium
+x11(width = 6, height = 3)
+ggplot(og, aes(x = ph_cacl2_method, y = (ph_cacl2)))+
+    geom_boxplot()+
+    theme_bw()+
+    ylab("Soil pH - CaCl extraction")+
+    xlab("Extraction Method")
+
+# panel plot for calcium
+x11(width = 6, height = 3)
+ggplot(og, aes(x = ph_h2o_method, y = (ph_h2o)))+
+    geom_boxplot()+
+    theme_bw()+
+    ylab(expression(paste("Soil pH - H "[2]*"O extraction")))+
+    xlab("Extraction Method")
 ####
 df %>%
     dplyr::select(contains("soil_name") | contains("horizon") | contains("ph_")) %>%
@@ -93,5 +108,27 @@ head(andy)
 # 
 # andy %>%
 # write to file
-write.csv(andy, "./data/southeast_soils_ph_output.csv", row.names = FALSE)
+write.csv(andy, "./data/FinalData/southeast_soils_ph_output.csv", row.names = FALSE)
 
+
+# 1 gram per cubic meter equals 1 megagram per cubic meter#
+andy %>%
+    group_by(soil_name) %>%
+    summarize(ph.h2o = mean(ph.h2o, na.rm = TRUE),
+              ph.cacl = mean(ph.cacl, na.rm = TRUE)) %>%
+    data.frame() -> soil.ph
+
+
+# histogram of finals
+x11(width = 6, height = 3)
+hist(soil.ph$ph.h2o, breaks = 100,
+     ylab = ("No. of Samples"),
+     xlab = (expression(paste("Soil pH - H "[2]*"O extraction"))),
+     main = NULL)
+
+# histogram of finals
+x11(width = 6, height = 3)
+hist(soil.ph$ph.cacl, breaks = 100,
+     ylab = ("No. of Samples"),
+     xlab = ("Soil pH - CaCl extraction"),
+     main = NULL)##### calculate p BRAY##### calculate p BRAY

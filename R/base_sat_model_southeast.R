@@ -68,6 +68,15 @@ for (i in 1:nrow(df)){
 }
 table(df$horizon)
 
+# panel plot for calcium
+x11(width = 6, height = 3)
+ggplot(og, aes(y = base_sat_nh4oac_ph_7))+
+    geom_boxplot()+
+    theme_bw()+
+    ylab("Base Saturation (%)")+
+    xlab("Extraction Method")
+
+
 
 # fix the soil name issue
 df$soil_name <- tolower(df$soil_name)
@@ -101,10 +110,15 @@ bob %>%
 head(andy)
 
 
-
+# histogram of finals
+x11(width = 6, height = 3)
+hist(andy$base_sat, breaks = 100,
+     ylab = ("No. of Samples"),
+     xlab = ("Base Saturation (%)"),
+     main = NULL)##### calculate p BRAY
 #####
 # 
 # andy %>%
 # write to file
-write.csv(andy, "./data/southeast_soils_base_sat_output.csv", row.names = FALSE)
+write.csv(andy, "./data/FinalData/base_sat_output.csv", row.names = FALSE)
 
