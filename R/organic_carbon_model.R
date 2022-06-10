@@ -68,6 +68,7 @@ og <- df            ######## we lose ~99 observations likely because there is a 
 
 
 
+
 ####################### NEW MODEL FOR REAL
 
 # fix the soil name issue
@@ -79,24 +80,24 @@ og <- df            ######## we lose ~99 observations likely because there is a 
 
 # panel plot for carbon
 x11(width = 6, height = 3)
-ggplot(og, aes(x = total_carbon_ncs_method, y = log10(total_carbon_ncs)))+
+ggplot(og, aes(x = oc_walkley_black_method, y = log10(organic_carbon_walkley_black)))+
     geom_boxplot()+
     theme_bw()+
-    ylab(expression(paste("Total Carbon (C) log "[10]*"(%)")))+
+    ylab(expression(paste("Organic Carbon (C) log "[10]*"(%)")))+
     xlab("Extraction Method")
 
 # Filter down and average
 
 ####
 df %>%
-    dplyr::select(contains("soil_name") | contains("horizon") | contains("total_carbon")) %>%
+    dplyr::select(contains("soil_name") | contains("horizon") | contains("walkley")) %>%
     #dplyr::group_by(soil_name, horizon) %>%
     # dplyr::mutate(ca_per = case_when(ca_nh4_ph_7_method == "6N" ~ ca_nh4_ph_7 * 0.02,
     #                                  ca_nh4_ph_7_method == "4B" ~ ca_nh4_ph_7,
     #                                  ca_nh4_ph_7_method == "NK" ~ 0,
     #                                  ca_nh4_ph_7_method == "" ~ 0)) %>%
     dplyr::group_by(soil_name, horizon) %>%
-    dplyr::summarise(c_per = mean(total_carbon_ncs, na.rm = TRUE)) %>%
+    dplyr::summarise(c_per = mean(organic_carbon_walkley_black, na.rm = TRUE)) %>%
     data.frame() -> df.c
 
 ##### numerical interpolation of 
@@ -169,7 +170,7 @@ for (i in 1:nrow(df)){
 df$c_Mg_ha <- df$c_Mg_horizon * 10000
 
 # writing the horizons to disk
-write.csv(df, "./data/FinalData/total_carbon_by_horizon.csv")
+write.csv(df, "./data/FinalData/oranic_carbon_by_horizon.csv")
 
 # 1 gram per cubic meter equals 1 megagram per cubic meter#
 df %>%
@@ -182,8 +183,8 @@ df %>%
 x11(width = 6, height = 3)
 hist(soil.c$c_Mg_ha, breaks = 100,
      ylab = ("No. of Samples"),
-     xlab = (expression(paste("Total Carbon (C) (Mg ha"^-1, ")"))),
+     xlab = (expression(paste("Organic Carbon (C) (Mg ha"^-1, ")"))),
      main = NULL)##### clculate p BRAY
 
 # writing final data to disk
-write.csv(soil.n, "./data/FinalData/total_carbon_to_1m_by_soil_series.csv")
+write.csv(soil.n, "./data/FinalData/organic_carbon_to_1m_by_soil_series.csv")
